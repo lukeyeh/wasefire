@@ -454,6 +454,25 @@ fn applet_trapped<B: Board>(reason: Option<&'static str>) -> ! {
 
 struct Trap;
 
+enum Failure {
+    Trap(Trap),
+    // TODO: Use this error in SchedulerCall::reply()
+    #[allow(dead_code)]
+    Error(Error),
+}
+
+impl From<Trap> for Failure {
+    fn from(value: Trap) -> Self {
+        Self::Trap(value)
+    }
+}
+
+impl From<Error> for Failure {
+    fn from(value: Error) -> Self {
+        Self::Error(value)
+    }
+}
+
 #[cfg(feature = "wasm")]
 const fn memory_size() -> usize {
     let page = match option_env!("WASEFIRE_MEMORY_PAGE_COUNT") {
